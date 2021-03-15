@@ -5,6 +5,8 @@
     "ts-check": "svelte-check"
   },
   "dependencies": {
+    "@types/socket.io-client": "^1.4.36",
+    "socket.io-client": "^4.0.0",
     "svelte": "^3.32.1"
   },
   "devDependencies": {
