@@ -14,7 +14,7 @@
   const user: string = 'Robin'
   let message: string = ''
   let encrypt: boolean = false
-  let togglePGP: boolean = false
+  let togglePGP: boolean = true
 
   function submit(): void {
     if (!message) {
@@ -50,7 +50,7 @@
     <div class="flex justify-center items-center">
       <Switch bind:checked={encrypt} />
       <p
-        class={`text-center mt-1 ml-1 ${
+        class={`text-center mt-1 ml-1 select-none ${
           encrypt ? 'text-blue-600' : 'text-red-600'
         }`}
       >
@@ -88,7 +88,11 @@
       >
     </form>
   </main>
-  <Modal bind:toggle={togglePGP} />
+  <Modal
+    bind:toggle={togglePGP}
+    mainButtonText="Save"
+    mainButtonFunction={logger}
+  />
 </div>
 
 <style>
