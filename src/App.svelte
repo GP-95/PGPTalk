@@ -6,6 +6,8 @@
   import MessageDisplay from './MessageDisplay.svelte'
   import type { Message } from 'types/interfaces'
 
+  import { keys } from './utility/store'
+
   // const socket = io()
   // socket.on('message', (data: Message) => {
   //   arr = [...arr, data]
@@ -14,18 +16,19 @@
   const user: string = 'Robin'
   let message: string = ''
   let encrypt: boolean = false
-  let togglePGP: boolean = true
+  let togglePGP: boolean = false
 
   function submit(): void {
     if (!message) {
       return
     }
+    if (encrypt) {
+      arr = [...arr, { message: '<Encrypted Placeholder>', username: user }]
+      message = ''
+      return
+    }
     arr = [...arr, { message: message, username: user }]
     message = ''
-  }
-
-  function logger(): void {
-    console.log('hello')
   }
 
   let arr: Message[] = [
@@ -39,28 +42,39 @@
         'Wassupwtg89ds7f6j9wp87 9tw9e86hg9wep86gb9pwe46gbo7ew44tn7op8e90yh45',
       username: 'Robin',
     },
-    { message: 'Fornite we about to get down', username: 'Paul' },
+    {
+      message: 'w8eyg98sehgqb5rt08ngtwef 9wurh0qw93hrf09wq3trfwet',
+      username: 'Paul',
+    },
   ]
 </script>
 
-<div>
-  <main
-    class=" sm:container mx-auto bg-blue-50 rounded-md p-4 h-screen flex-col justify-between pb-10"
+<div
+  class="bg-indigo-300 w-screen h-screen flex flex-col justify-center items-center"
+>
+  <div
+    class="flex justify-between rounded items-center mb-2 bg-indigo-600 p-2 w-4/12 min-w-min"
   >
-    <div class="flex justify-center items-center">
+    <section class="flex justify-between w-2/12 min-w-min">
       <Switch bind:checked={encrypt} />
-      <p
-        class={`text-center mt-1 ml-1 select-none ${
-          encrypt ? 'text-blue-600' : 'text-red-600'
-        }`}
-      >
-        {encrypt ? 'Encrypted' : 'Not Encrypted'}
-        <Button
-          buttonName="PGP Keys"
-          on:click={() => (togglePGP = !togglePGP)}
-        />
-      </p>
-    </div>
+      <img
+        class={`lock-icon ${
+          encrypt ? 'bg-green-400' : 'bg-yellow-600'
+        } transition-colors`}
+        src={encrypt ? 'icons/secure.svg' : 'icons/insecure.svg'}
+        alt={encrypt ? 'locked icon' : 'unlocked icon'}
+      />
+    </section>
+    <Button
+      buttonName="PGP Keys"
+      backgroundColor="bg-green-600"
+      backgroundHoverColor="bg-green-500"
+      on:click={() => (togglePGP = !togglePGP)}
+    />
+  </div>
+  <main
+    class=" sm:container h-5/6 mx-auto bg-blue-50 rounded-md p-4 flex-col justify-between pb-14"
+  >
     <section
       class="__text-container mx-auto inline-flex flex-col overflow-y-auto w-full"
     >
@@ -79,7 +93,7 @@
         name=""
         id="message"
         autocomplete="off"
-        class="bg-gray-100 rounded h-8 outline-none border-2 w-4/6 focus:border-blue-600 focus:bg-gray-50 px-2 py-3 mx-2"
+        class="bg-gray-200 rounded h-8 outline-none border-2 w-4/6 focus:border-blue-600 focus:bg-gray-50 px-2 py-3 mx-2"
       />
       <button
         type="submit"
@@ -88,16 +102,24 @@
       >
     </form>
   </main>
-  <Modal
-    bind:toggle={togglePGP}
-    mainButtonText="Save"
-    mainButtonFunction={logger}
-  />
+  {#if togglePGP}
+    <Modal
+      bind:toggle={togglePGP}
+      mainButtonText="Save"
+      mainButtonFunction={() => console.log('placesholder')}
+    />
+  {/if}
 </div>
 
 <style>
   .__text-container {
     height: 95%;
     padding-bottom: 5rem;
+  }
+
+  .lock-icon {
+    height: 34px;
+    padding: 0.2rem;
+    border-radius: 50%;
   }
 </style>

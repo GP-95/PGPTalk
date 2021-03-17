@@ -7,7 +7,7 @@
   export let mainButtonFunction: Function
 </script>
 
-<main class="backdrop" class:hide={!toggle} on:click={() => (toggle = !toggle)}>
+<main class="backdrop" on:click={() => (toggle = !toggle)}>
   <section
     class="container rounded p-5 flex flex-col justify-between"
     on:click|stopPropagation
@@ -49,10 +49,6 @@
     right: 0;
     background: rgba(0, 0, 0, 0.61);
     z-index: 10;
-  }
-
-  .hide {
-    display: none;
   }
 
   .container {

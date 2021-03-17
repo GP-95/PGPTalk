@@ -2,6 +2,7 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
   "include": ["src", "types"],
   "compilerOptions": {
+    "allowJs": true,
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
