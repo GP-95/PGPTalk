@@ -3,7 +3,7 @@
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
   import PGPKeys from './PGPKeys.svelte'
-  // import { io } from 'socket.io-client'
+  import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { Message } from 'types/interfaces'
   import cuid from 'cuid'
@@ -13,10 +13,22 @@
   import PublicKey from './PublicKey.svelte'
   import { encryptMessage } from './utility/cryptions'
 
-  // const socket = io()
-  // socket.on('message', (data: Message) => {
-  //   arr = [...arr, data]
-  // })
+  const socket = io()
+  socket.on('message', (data: Message) => {
+    if (data.encrypted) {
+      console.log('This message is encrypted')
+      data.message = '<!>Encrpypted message<!>'
+      if (data.username === user) {
+        return
+      }
+      arr = [...arr, data]
+      return
+    }
+    if (data.username === user) {
+      return
+    }
+    arr = [...arr, data]
+  })
 
   const user: string = cuid()
   let message: string = ''
@@ -30,22 +42,36 @@
     }
     // if true, encrypts message
     if (encrypt) {
-      // arr = [...arr, { message: '<Encrypted Placeholder>', username: user }]
-      // socket.emit('message', { message: `<!>${message}<!>`, username: user })
-      const encrypted = await encryptMessage({
-        message: message,
-        publicKey: $recipientKey.public,
-        privateKey: $keys.private,
+      arr = [
+        ...arr,
+        {
+          message: '<!>Encrypted message<!>',
+          username: user,
+          encrypted: encrypt,
+        },
+      ]
+      socket.emit('message', {
+        message: `<!>Encrypted message<!>`,
+        username: user,
+        encrypted: encrypt,
       })
-      console.log(encrypted)
-      // arr = [...arr, { message: encrypted, username: user }]
+      // const encrypted = await encryptMessage({
+      //   message: message,
+      //   publicKey: $recipientKey.public,
+      //   privateKey: $keys.private,
+      // })
+      // arr = [...arr, { message: encrypted, username: user, encrypted: encrypt }]
       message = ''
       return
     }
     // Send message to server
-    // socket.emit('message', { message: message, username: user })
+    socket.emit('message', {
+      message: message,
+      username: user,
+      encrypted: encrypt,
+    })
 
-    arr = [...arr, { message: message, username: user }]
+    arr = [...arr, { message: message, username: user, encrypted: encrypt }]
     message = ''
   }
 
@@ -54,15 +80,18 @@
       message:
         'Hello frg9dxuu6gtbwe47p96tg89eptn4p7th6n9earp8g6ny98dra6ntg89e7ygiend',
       username: 'Paul',
+      encrypted: false,
     },
     {
       message:
         'Wassupwtg89ds7f6j9wp87 9tw9e86hg9wep86gb9pwe46gbo7ew44tn7op8e90yh45',
       username: 'Robin',
+      encrypted: false,
     },
     {
       message: 'w8eyg98sehgqb5rt08ngtwef 9wurh0qw93hrf09wq3trfwet',
       username: 'Paul',
+      encrypted: false,
     },
   ]
 </script>
@@ -76,7 +105,7 @@
     <section class="flex justify-between w-2/12 min-w-min">
       <Switch bind:checked={encrypt} />
       <img
-        class={`lock-icon ${
+        class={`lock-icon select-none ${
           encrypt ? 'bg-green-400' : 'bg-yellow-600'
         } transition-colors`}
         src={encrypt ? 'icons/secure.svg' : 'icons/insecure.svg'}

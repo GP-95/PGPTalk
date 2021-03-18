@@ -1,6 +1,7 @@
 export interface Message {
   message: string
   username: string
+  encrypted: boolean
 }
 
 export interface EncryptMessage {
@@ -13,6 +14,7 @@ export interface EncryptMessage {
 export interface Keys {
   public: string
   private: string
+  password: string
 }
 
 export interface RecipientKey {

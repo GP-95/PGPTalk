@@ -4,10 +4,18 @@
   import { generateKey } from './utility/pgp'
 
   async function newKeys() {
-    const keysObj = await generateKey({
-      type: 'rsa',
-      userIds: { name: 'Rob', email: 'yuup@yuup.com' },
-    })
+    if ($keys.password) {
+      var keysObj = await generateKey({
+        type: 'rsa',
+        userIds: { name: 'test', email: 'test' },
+        passphrase: $keys.password,
+      })
+    } else {
+      var keysObj = await generateKey({
+        type: 'rsa',
+        userIds: { name: 'test', email: 'test@test.test' },
+      })
+    }
 
     $keys.public = keysObj.publicKeyArmored
     $keys.private = keysObj.privateKeyArmored
@@ -24,7 +32,13 @@
 
 <main class=" mx-auto flex flex-col w-full">
   <Button buttonName="Generate new keys" on:click={newKeys} />
-  <div class="mx-auto flex flex-col items-center w-5/6 mt-7">
+  <input
+    type="password"
+    bind:value={$keys.password}
+    class="w-80 mx-auto px-1 mt-2 text-center border rounded focus:border-blue-600 focus:outline-none"
+    placeholder="Password"
+  />
+  <div class="mx-auto flex flex-col items-center w-5/6 mt-4">
     <div
       class="flex text-center justify-center __copyControl w-4/12"
       on:click={() => copyClipboard('publicKey')}
