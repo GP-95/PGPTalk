@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@types/socket.io-client": "^1.4.36",
-    "openpgp": "^5.0.0-1",
+    "cuid": "^2.1.8",
     "socket.io-client": "^4.0.0",
     "svelte": "^3.32.1"
   },
@@ -19,6 +19,7 @@
     "@tsconfig/svelte": "^1.0.10",
     "@types/snowpack-env": "^2.3.3",
     "autoprefixer": "^10.2.4",
+    "openpgp": "^5.0.0-1",
     "postcss": "^8.2.4",
     "postcss-cli": "^8.3.1",
     "postcss-import": "^14.0.0",

@@ -3,14 +3,18 @@ export interface Message {
   username: string
 }
 
+export interface EncryptMessage {
+  message: string
+  publicKey: string
+  privateKey: string
+  password?: string
+}
+
 export interface Keys {
   public: string
   private: string
 }
 
-// export interface GeneratedKeys {
-//   key: any
-//   privateKeyArmored: string
-//   publicKeyArmored: string
-//   revocationCertificate: string
-// }
+export interface RecipientKey {
+  public: string
+}

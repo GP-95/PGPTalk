@@ -2,7 +2,6 @@
   import Button from './Button.svelte'
   import { keys } from './utility/store'
   import { generateKey } from './utility/pgp'
-  // import { GeneratedKeys } from '../types/interfaces'
 
   async function newKeys() {
     const keysObj = await generateKey({
@@ -20,11 +19,6 @@
     )
     textarea.value
     navigator.clipboard.writeText(textarea.value)
-  }
-
-  function log(e: Event): void {
-    e.preventDefault()
-    console.log(`Public: ${$keys.public}, Private: ${$keys.private}`)
   }
 </script>
 

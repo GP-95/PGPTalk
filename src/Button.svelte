@@ -9,6 +9,6 @@
 </script>
 
 <button
-  class={`${backgroundColor} rounded outline-none ${textSize} ${paddingY} ${paddingX} text-${textColor} hover:${backgroundHoverColor}`}
+  class={`${backgroundColor} rounded focus:outline-none ${textSize} ${paddingY} ${paddingX} text-${textColor} hover:${backgroundHoverColor}`}
   on:click>{buttonName}</button
 >

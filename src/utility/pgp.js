@@ -30087,7 +30087,7 @@ function deflateEnd(strm) {
  * sequence without producing any compressed output.
  */
 function deflateSetDictionary(strm, dictionary) {
-  const dictLength = dictionary.length
+  let dictLength = dictionary.length
 
   let s
   let str, n

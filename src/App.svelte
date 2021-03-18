@@ -2,31 +2,49 @@
   import Switch from './Switch.svelte'
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
+  import PGPKeys from './PGPKeys.svelte'
   // import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { Message } from 'types/interfaces'
+  import cuid from 'cuid'
 
-  import { keys } from './utility/store'
+  import { keys, recipientKey } from './utility/store'
+  import PgpKeys from './PGPKeys.svelte'
+  import PublicKey from './PublicKey.svelte'
+  import { encryptMessage } from './utility/cryptions'
 
   // const socket = io()
   // socket.on('message', (data: Message) => {
   //   arr = [...arr, data]
   // })
 
-  const user: string = 'Robin'
+  const user: string = cuid()
   let message: string = ''
   let encrypt: boolean = false
   let togglePGP: boolean = false
+  let toggleRecipient: boolean = false
 
-  function submit(): void {
+  async function submit(): Promise<void> {
     if (!message) {
       return
     }
+    // if true, encrypts message
     if (encrypt) {
-      arr = [...arr, { message: '<Encrypted Placeholder>', username: user }]
+      // arr = [...arr, { message: '<Encrypted Placeholder>', username: user }]
+      // socket.emit('message', { message: `<!>${message}<!>`, username: user })
+      const encrypted = await encryptMessage({
+        message: message,
+        publicKey: $recipientKey.public,
+        privateKey: $keys.private,
+      })
+      console.log(encrypted)
+      // arr = [...arr, { message: encrypted, username: user }]
       message = ''
       return
     }
+    // Send message to server
+    // socket.emit('message', { message: message, username: user })
+
     arr = [...arr, { message: message, username: user }]
     message = ''
   }
@@ -66,7 +84,13 @@
       />
     </section>
     <Button
-      buttonName="PGP Keys"
+      buttonName="Recepient key"
+      backgroundColor="bg-yellow-600"
+      backgroundHoverColor="bg-yellow-500"
+      on:click={() => (toggleRecipient = !toggleRecipient)}
+    />
+    <Button
+      buttonName="Personal Keys"
       backgroundColor="bg-green-600"
       backgroundHoverColor="bg-green-500"
       on:click={() => (togglePGP = !togglePGP)}
@@ -98,16 +122,23 @@
       <button
         type="submit"
         class="bg-blue-500 text-white px-7 py-1 w-2/6 max-w-xs rounded hover:bg-blue-600"
-        >Send</button
+        disabled={!message}>Send</button
       >
     </form>
   </main>
   {#if togglePGP}
-    <Modal
-      bind:toggle={togglePGP}
-      mainButtonText="Save"
-      mainButtonFunction={() => console.log('placesholder')}
-    />
+    <Modal bind:toggle={togglePGP}>
+      <span slot="content">
+        <PgpKeys />
+      </span>
+    </Modal>
+  {/if}
+  {#if toggleRecipient}
+    <Modal bind:toggle={toggleRecipient}>
+      <span slot="content" class="h-full">
+        <PublicKey />
+      </span>
+    </Modal>
   {/if}
 </div>
 

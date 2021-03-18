@@ -1,10 +1,7 @@
 <script>
   import Button from './Button.svelte'
-  import PGPKeys from './PGPKeys.svelte'
 
   export let toggle: boolean = false
-  export let mainButtonText: string = 'Change me'
-  export let mainButtonFunction: Function
 </script>
 
 <main class="backdrop" on:click={() => (toggle = !toggle)}>
@@ -12,9 +9,12 @@
     class="container rounded p-5 flex flex-col justify-between"
     on:click|stopPropagation
   >
-    <slot name="main" />
-    <PGPKeys />
-    <div class=" flex justify-between w-3/5 mx-auto max-h-14 mb-3">
+    <slot name="content" />
+    <div
+      class={`flex ${
+        $$props.button ? 'justify-between' : 'justify-center'
+      } w-3/5 mx-auto max-h-14 mb-3`}
+    >
       <Button
         on:click={() => (toggle = !toggle)}
         buttonName="Close"
@@ -23,14 +23,7 @@
         textSize="text-lg"
         paddingX="px-6"
       />
-      <Button
-        on:click={() => mainButtonFunction()}
-        buttonName={mainButtonText}
-        backgroundColor="bg-blue-600"
-        backgroundHoverColor="bg-blue-800"
-        textSize="text-lg"
-        paddingX="px-7"
-      />
+      <slot name="button" />
     </div>
   </section>
 </main>
