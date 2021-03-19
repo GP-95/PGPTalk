@@ -7,7 +7,7 @@
     if ($keys.password) {
       var keysObj = await generateKey({
         type: 'rsa',
-        userIds: { name: 'test', email: 'test' },
+        userIds: { name: 'test', email: 'test@test.test' },
         passphrase: $keys.password,
       })
     } else {
@@ -17,8 +17,9 @@
       })
     }
 
-    $keys.public = keysObj.publicKeyArmored
-    $keys.private = keysObj.privateKeyArmored
+    // console.log(keysObj)
+    $keys.publicKey = keysObj.publicKeyArmored
+    $keys.privateKey = keysObj.privateKeyArmored
   }
 
   function copyClipboard(id: string): void {
@@ -32,6 +33,7 @@
 
 <main class=" mx-auto flex flex-col w-full">
   <Button buttonName="Generate new keys" on:click={newKeys} />
+  <p>{$keys.password}</p>
   <input
     type="password"
     bind:value={$keys.password}
@@ -47,7 +49,7 @@
       <label class="text-center select-none" for="publicKey">Public Key</label>
     </div>
     <textarea
-      bind:value={$keys.public}
+      bind:value={$keys.publicKey}
       class="w-full my-2 h-36 max-h-30 rounded mb-5 outline-none border focus:border-blue-500 transition-colors p-1 max-h-36"
       name="Public key"
       id="publicKey"
@@ -62,7 +64,7 @@
       >
     </div>
     <textarea
-      bind:value={$keys.private}
+      bind:value={$keys.privateKey}
       class="w-full my-2 h-36 max-h-30 rounded outline-none border focus:border-blue-500 transition-colors p-1 max-h-36"
       name="Private key"
       id="privateKey"

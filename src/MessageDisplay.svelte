@@ -1,7 +1,7 @@
 <script>
-  import type { Message } from '../types/interfaces'
+  import type { MessageData } from '../types/interfaces'
   export let user: string
-  export let message: Message
+  export let message: MessageData
   const identityColor = (userName: string) => {
     if (message.username === userName) {
       return 'self-end bg-blue-500'
@@ -14,6 +14,11 @@
 </script>
 
 <article class={`__width rounded inline-block p-2 m-2 ${identityColor(user)}`}>
+  <!-- {#if message.encrypted}
+    <p class="text-white">Message is encrypted!</p>
+  {:else}
+    <p class="text-white">{message.message}</p>
+  {/if} -->
   <p class="text-white">{message.message}</p>
 </article>
 

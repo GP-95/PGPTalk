@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store'
-import type { Keys, RecipientKey } from '../../types/interfaces'
+import type { KeyPair, RecipientKey } from '../../types/interfaces'
 
-export const keys = writable<Keys>({
-  public: '',
-  private: '',
+export const keys = writable<KeyPair>({
+  publicKey: '',
+  privateKey: '',
   password: '',
 })
 

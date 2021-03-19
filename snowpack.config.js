@@ -31,4 +31,7 @@ module.exports = {
     treeshake: true,
     target: 'es2020',
   },
+  buildOptions: {
+    out: '../chatServer/dist/public/',
+  },
 }

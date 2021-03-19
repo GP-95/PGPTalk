@@ -2,33 +2,39 @@
   import Switch from './Switch.svelte'
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
-  import PGPKeys from './PGPKeys.svelte'
-  import { io } from 'socket.io-client'
+  // import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
-  import type { Message } from 'types/interfaces'
+  import type { MessageData } from 'types/interfaces'
   import cuid from 'cuid'
 
   import { keys, recipientKey } from './utility/store'
   import PgpKeys from './PGPKeys.svelte'
   import PublicKey from './PublicKey.svelte'
-  import { encryptMessage } from './utility/cryptions'
+  import { createPGPMessage, decryptMessage } from './utility/cryptions'
 
-  const socket = io()
-  socket.on('message', (data: Message) => {
-    if (data.encrypted) {
-      console.log('This message is encrypted')
-      data.message = '<!>Encrpypted message<!>'
-      if (data.username === user) {
-        return
-      }
-      arr = [...arr, data]
-      return
-    }
-    if (data.username === user) {
-      return
-    }
-    arr = [...arr, data]
-  })
+  import { decryptTest } from './utility/test/testFunction'
+
+  // const socket = io()
+  // socket.on('message', async (data: MessageData) => {
+  //   if (data.encrypted) {
+  //     // Does not display own messages from server
+  //     if (data.username === user) {
+  //       return
+  //     }
+  //     // descrypts message
+  //     const message = await decryptMessage(data, {
+  //       publicKey: $keys.publicKey,
+  //       privateKey: $keys.privateKey,
+  //       password: $keys.password,
+  //     })
+  //     arr = [...arr, message]
+  //     return
+  //   }
+  //   if (data.username === user) {
+  //     return
+  //   }
+  //   arr = [...arr, data]
+  // })
 
   const user: string = cuid()
   let message: string = ''
@@ -37,63 +43,49 @@
   let toggleRecipient: boolean = false
 
   async function submit(): Promise<void> {
+    // returns if no message entered
     if (!message) {
       return
     }
-    // if true, encrypts message
     if (encrypt) {
+      // encrypts message
+      const encryptedMessage = await createPGPMessage({
+        message,
+        publicKey: $recipientKey.public,
+        privateKey: $keys.privateKey,
+        password: $keys.password,
+      })
+      // Emits encrypted message to server
+      // socket.emit('message', {
+      //   message: encryptedMessage,
+      //   username: user,
+      //   encrypted: encrypt,
+      // })
+      // shows un-encrypted message to sender
       arr = [
         ...arr,
-        {
-          message: '<!>Encrypted message<!>',
-          username: user,
-          encrypted: encrypt,
-        },
+        { message: encryptedMessage, username: user, encrypted: false },
       ]
-      socket.emit('message', {
-        message: `<!>Encrypted message<!>`,
-        username: user,
-        encrypted: encrypt,
-      })
-      // const encrypted = await encryptMessage({
-      //   message: message,
-      //   publicKey: $recipientKey.public,
-      //   privateKey: $keys.private,
-      // })
-      // arr = [...arr, { message: encrypted, username: user, encrypted: encrypt }]
       message = ''
       return
     }
-    // Send message to server
-    socket.emit('message', {
-      message: message,
-      username: user,
-      encrypted: encrypt,
-    })
+    // Sends unencrypted message to server
+    // socket.emit('message', {
+    //   message: message,
+    //   username: user,
+    //   encrypted: encrypt,
+    // })
 
     arr = [...arr, { message: message, username: user, encrypted: encrypt }]
     message = ''
   }
 
-  let arr: Message[] = [
-    {
-      message:
-        'Hello frg9dxuu6gtbwe47p96tg89eptn4p7th6n9earp8g6ny98dra6ntg89e7ygiend',
-      username: 'Paul',
-      encrypted: false,
-    },
-    {
-      message:
-        'Wassupwtg89ds7f6j9wp87 9tw9e86hg9wep86gb9pwe46gbo7ew44tn7op8e90yh45',
-      username: 'Robin',
-      encrypted: false,
-    },
-    {
-      message: 'w8eyg98sehgqb5rt08ngtwef 9wurh0qw93hrf09wq3trfwet',
-      username: 'Paul',
-      encrypted: false,
-    },
-  ]
+  let arr: MessageData[] = []
+  let thing: any
+  async function testFunc() {
+    const x = await decryptTest()
+    thing = x.data
+  }
 </script>
 
 <div
@@ -102,6 +94,9 @@
   <div
     class="flex justify-between rounded items-center mb-2 bg-indigo-600 p-2 w-4/12 min-w-min"
   >
+    <button on:click={testFunc} class="bg-red-600 rounded text-white"
+      >Test decrypt</button
+    >
     <section class="flex justify-between w-2/12 min-w-min">
       <Switch bind:checked={encrypt} />
       <img
@@ -134,6 +129,7 @@
       {#each arr as sonum}
         <MessageDisplay message={sonum} {user} />
       {/each}
+      <p>{thing}</p>
     </section>
 
     <form

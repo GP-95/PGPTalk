@@ -1,4 +1,4 @@
-export interface Message {
+export interface MessageData {
   message: string
   username: string
   encrypted: boolean
@@ -11,9 +11,9 @@ export interface EncryptMessage {
   password?: string
 }
 
-export interface Keys {
-  public: string
-  private: string
+export interface KeyPair {
+  publicKey: string
+  privateKey: string
   password: string
 }
 
