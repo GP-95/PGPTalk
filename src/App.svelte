@@ -35,7 +35,7 @@
     arr = [...arr, data]
   })
 
-  // All messages re-encrypt when messages are clicked to decrypt. Due to state re-assignment? Need to implement IDs?
+  // All click-de-encrypted messages re-encrypt whenever message array is updated.
   let arr: MessageData[] = []
   const user: string = cuid()
   let message: string = ''

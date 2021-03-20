@@ -14,9 +14,8 @@
     }
   }
 
-  // THIS FUNCTION DOES NOT WORK
   async function decrypt(decryptThis: MessageData) {
-    if (decryptThis.message) {
+    if (!decryptThis.encrypted) {
       return
     }
     const decryptedMsg = await decryptMessage(decryptThis, {
