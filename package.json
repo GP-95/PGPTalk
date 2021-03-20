@@ -17,6 +17,7 @@
     "@snowpack/plugin-svelte": "^3.5.2",
     "@snowpack/plugin-typescript": "^1.2.1",
     "@tsconfig/svelte": "^1.0.10",
+    "@types/openpgp": "^4.4.15",
     "@types/snowpack-env": "^2.3.3",
     "autoprefixer": "^10.2.4",
     "openpgp": "^5.0.0-1",

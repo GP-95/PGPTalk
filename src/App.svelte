@@ -2,7 +2,7 @@
   import Switch from './Switch.svelte'
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
-  // import { io } from 'socket.io-client'
+  import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { MessageData } from 'types/interfaces'
   import cuid from 'cuid'
@@ -12,29 +12,29 @@
   import PublicKey from './PublicKey.svelte'
   import { createPGPMessage, decryptMessage } from './utility/cryptions'
 
-  import { decryptTest } from './utility/test/testFunction'
+  // import { decryptTest } from './utility/test/testFunction'
 
-  // const socket = io()
-  // socket.on('message', async (data: MessageData) => {
-  //   if (data.encrypted) {
-  //     // Does not display own messages from server
-  //     if (data.username === user) {
-  //       return
-  //     }
-  //     // descrypts message
-  //     const message = await decryptMessage(data, {
-  //       publicKey: $keys.publicKey,
-  //       privateKey: $keys.privateKey,
-  //       password: $keys.password,
-  //     })
-  //     arr = [...arr, message]
-  //     return
-  //   }
-  //   if (data.username === user) {
-  //     return
-  //   }
-  //   arr = [...arr, data]
-  // })
+  const socket = io()
+  socket.on('message', async (data: MessageData) => {
+    if (data.encrypted) {
+      // Does not display own messages from server
+      if (data.username === user) {
+        return
+      }
+      // descrypts message
+      const message = await decryptMessage(data, {
+        publicKey: $keys.publicKey,
+        privateKey: $keys.privateKey,
+        password: $keys.password,
+      })
+      arr = [...arr, message]
+      return
+    }
+    if (data.username === user) {
+      return
+    }
+    arr = [...arr, data]
+  })
 
   const user: string = cuid()
   let message: string = ''
@@ -56,36 +56,28 @@
         password: $keys.password,
       })
       // Emits encrypted message to server
-      // socket.emit('message', {
-      //   message: encryptedMessage,
-      //   username: user,
-      //   encrypted: encrypt,
-      // })
+      socket.emit('message', {
+        message: encryptedMessage,
+        username: user,
+        encrypted: encrypt,
+      })
       // shows un-encrypted message to sender
-      arr = [
-        ...arr,
-        { message: encryptedMessage, username: user, encrypted: false },
-      ]
+      arr = [...arr, { message: message, username: user, encrypted: false }]
       message = ''
       return
     }
     // Sends unencrypted message to server
-    // socket.emit('message', {
-    //   message: message,
-    //   username: user,
-    //   encrypted: encrypt,
-    // })
+    socket.emit('message', {
+      message: message,
+      username: user,
+      encrypted: encrypt,
+    })
 
     arr = [...arr, { message: message, username: user, encrypted: encrypt }]
     message = ''
   }
 
   let arr: MessageData[] = []
-  let thing: any
-  async function testFunc() {
-    const x = await decryptTest()
-    thing = x.data
-  }
 </script>
 
 <div
@@ -94,9 +86,6 @@
   <div
     class="flex justify-between rounded items-center mb-2 bg-indigo-600 p-2 w-4/12 min-w-min"
   >
-    <button on:click={testFunc} class="bg-red-600 rounded text-white"
-      >Test decrypt</button
-    >
     <section class="flex justify-between w-2/12 min-w-min">
       <Switch bind:checked={encrypt} />
       <img
@@ -129,7 +118,6 @@
       {#each arr as sonum}
         <MessageDisplay message={sonum} {user} />
       {/each}
-      <p>{thing}</p>
     </section>
 
     <form
