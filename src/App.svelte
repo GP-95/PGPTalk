@@ -12,11 +12,10 @@
   import PublicKey from './PublicKey.svelte'
   import { createPGPMessage, decryptMessage } from './utility/cryptions'
 
-  // import { decryptTest } from './utility/test/testFunction'
-
   const socket = io()
   socket.on('message', async (data: MessageData) => {
-    if (data.encrypted) {
+    if (data.encrypted && autoDecrypt) {
+      console.log('decrypting on arrival')
       // Does not display own messages from server
       if (data.username === user) {
         return
@@ -36,11 +35,14 @@
     arr = [...arr, data]
   })
 
+  // All messages re-encrypt when messages are clicked to decrypt. Due to state re-assignment? Need to implement IDs?
+  let arr: MessageData[] = []
   const user: string = cuid()
   let message: string = ''
   let encrypt: boolean = false
   let togglePGP: boolean = false
   let toggleRecipient: boolean = false
+  let autoDecrypt: boolean = false
 
   async function submit(): Promise<void> {
     // returns if no message entered
@@ -55,7 +57,7 @@
         privateKey: $keys.privateKey,
         password: $keys.password,
       })
-      // Emits encrypted message to server
+      // // Emits encrypted message to server
       socket.emit('message', {
         message: encryptedMessage,
         username: user,
@@ -76,25 +78,41 @@
     arr = [...arr, { message: message, username: user, encrypted: encrypt }]
     message = ''
   }
-
-  let arr: MessageData[] = []
 </script>
 
 <div
   class="bg-indigo-300 w-screen h-screen flex flex-col justify-center items-center"
 >
   <div
-    class="flex justify-between rounded items-center mb-2 bg-indigo-600 p-2 w-4/12 min-w-min"
+    class="flex justify-evenly rounded items-center mb-2 bg-indigo-600 p-2 w-5/12 min-w-min"
   >
-    <section class="flex justify-between w-2/12 min-w-min">
-      <Switch bind:checked={encrypt} />
-      <img
-        class={`lock-icon select-none ${
-          encrypt ? 'bg-green-400' : 'bg-yellow-600'
-        } transition-colors`}
-        src={encrypt ? 'icons/secure.svg' : 'icons/insecure.svg'}
-        alt={encrypt ? 'locked icon' : 'unlocked icon'}
-      />
+    <section class="flex justify-between w-5/12 min-w-min mx-2">
+      <div class="flex justify-evenly w-full">
+        <Switch bind:checked={encrypt}>
+          <img
+            slot="icon"
+            class={`lock-icon select-none ${
+              encrypt ? 'bg-green-400' : 'bg-yellow-600'
+            } transition-colors`}
+            src={encrypt ? 'icons/secure.svg' : 'icons/insecure.svg'}
+            alt={encrypt ? 'locked icon' : 'unlocked icon'}
+          />
+          <p class="text-white select-none" slot="text">
+            Encryption: <span
+              class={`${encrypt ? 'text-green-400' : 'text-red-400'}`}
+              >{encrypt ? 'ON' : 'OFF'}</span
+            >
+          </p>
+        </Switch>
+        <Switch bind:checked={autoDecrypt}>
+          <p class="text-white select-none" slot="text">
+            Decrypt: <span
+              class={`${autoDecrypt ? 'text-green-400' : 'text-red-400'}`}
+              >{autoDecrypt ? 'ON' : 'OFF'}</span
+            >
+          </p>
+        </Switch>
+      </div>
     </section>
     <Button
       buttonName="Recepient key"

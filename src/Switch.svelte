@@ -3,10 +3,16 @@
   export let disabled = false
 </script>
 
-<label class="svelteit-switch min-w-min mr-1">
-  <input type="checkbox" bind:checked {disabled} />
-  <span class="svelteit-slider min-w-min" />
-</label>
+<div class="flex flex-col justify-center items-center w-7/12">
+  <div class="flex">
+    <label class="svelteit-switch min-w-min mr-1">
+      <input type="checkbox" bind:checked {disabled} />
+      <span class="svelteit-slider min-w-min" />
+    </label>
+    <slot name="icon" />
+  </div>
+  <slot name="text" />
+</div>
 
 <style>
   .svelteit-switch {
