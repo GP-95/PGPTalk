@@ -37,7 +37,7 @@ export async function createPGPMessage({
 }
 
 export async function decryptMessage(
-  { message, username, encrypted }: MessageData,
+  { message, username, encrypted, room, id }: MessageData,
   { publicKey, privateKey, password }: KeyPair
 ): Promise<MessageData> {
   let scopedPrivate: any
@@ -57,5 +57,11 @@ export async function decryptMessage(
     privateKeys: scopedPrivate,
   })
   console.log(decryptedMessage)
-  return { message: decryptedMessage.data, username, encrypted: false }
+  return {
+    message: decryptedMessage.data,
+    username,
+    encrypted: false,
+    room,
+    id,
+  }
 }

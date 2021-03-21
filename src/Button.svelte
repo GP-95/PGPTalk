@@ -6,9 +6,10 @@
   export let paddingY: string = 'py-1'
   export let paddingX: string = 'px-3'
   export let textSize: string = 'text-base'
+  export let width: string = ''
 </script>
 
 <button
-  class={`${backgroundColor} rounded focus:outline-none ${textSize} ${paddingY} ${paddingX} text-${textColor} hover:${backgroundHoverColor}`}
+  class={`${backgroundColor} rounded focus:outline-none ${textSize} ${width} ${paddingY} ${paddingX} text-${textColor} text-center hover:${backgroundHoverColor}`}
   on:click>{buttonName}</button
 >

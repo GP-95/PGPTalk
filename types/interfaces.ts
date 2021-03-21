@@ -2,6 +2,8 @@ export interface MessageData {
   message: string
   username: string
   encrypted: boolean
+  room: string
+  id: number
 }
 
 export interface EncryptMessage {

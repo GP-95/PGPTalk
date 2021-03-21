@@ -4,11 +4,16 @@
     "build": "snowpack build",
     "ts-check": "svelte-check"
   },
+  "routify": {
+    "extensions": "svelte,html,svx,md",
+    "dynamicImports": false,
+    "routifyDir": "src/.routify"
+  },
   "dependencies": {
-    "@types/socket.io-client": "^1.4.36",
     "cuid": "^2.1.8",
     "socket.io-client": "^4.0.0",
-    "svelte": "^3.32.1"
+    "svelte": "^3.32.1",
+    "svelte-spa-router": "^3.1.0"
   },
   "devDependencies": {
     "@snowpack/app-scripts-svelte": "^2.0.0",
@@ -19,7 +24,9 @@
     "@tsconfig/svelte": "^1.0.10",
     "@types/openpgp": "^4.4.15",
     "@types/snowpack-env": "^2.3.3",
+    "@types/socket.io-client": "^1.4.36",
     "autoprefixer": "^10.2.4",
+    "npm": "^7.6.3",
     "openpgp": "^5.0.0-1",
     "postcss": "^8.2.4",
     "postcss-cli": "^8.3.1",
@@ -27,6 +34,7 @@
     "postcss-load-config": "^3.0.0",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.1.2",
+    "run": "^1.4.0",
     "snowpack": "^3.0.11",
     "svelte-check": "^1.1.32",
     "svelte-preprocess": "^4.6.6",
