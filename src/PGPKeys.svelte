@@ -2,6 +2,7 @@
   import Button from './Button.svelte'
   import { keys } from './utility/store'
   import { generateKey } from './utility/pgp'
+  import { toast } from '@zerodevx/svelte-toast'
 
   async function newKeys() {
     if ($keys.password) {
@@ -28,6 +29,12 @@
     )
     textarea.value
     navigator.clipboard.writeText(textarea.value)
+    toast.push('Key copied to clipboard', {
+      theme: {
+        '--toastBackground': '#48BB78',
+        '--toastProgressBackground': '#2F855A',
+      },
+    })
   }
 </script>
 

@@ -2,6 +2,7 @@
   import Switch from './Switch.svelte'
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
+  import { SvelteToast, toast } from '@zerodevx/svelte-toast'
   import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { MessageData } from 'types/interfaces'
@@ -67,12 +68,23 @@
     }
     if (encrypt) {
       // encrypts message
-      const encryptedMessage = await createPGPMessage({
-        message,
-        publicKey: $recipientKey.public,
-        privateKey: $keys.privateKey,
-        password: $keys.password,
-      })
+      let encryptedMessage
+      try {
+        encryptedMessage = await createPGPMessage({
+          message,
+          publicKey: $recipientKey.public,
+          privateKey: $keys.privateKey,
+          password: $keys.password,
+        })
+      } catch (error) {
+        console.log(error)
+        toast.push('Cannot encrypt! Check keys and password!', {
+          theme: {
+            '--toastBackground': '#F56565',
+            '--toastProgressBackground': '#C53030',
+          },
+        })
+      }
       // // Emits encrypted message to server
       socket.emit('message', {
         message: encryptedMessage,
@@ -129,11 +141,38 @@
     if (!decryptThis.encrypted) {
       return
     }
-    const decryptedMsg = await decryptMessage(decryptThis, {
-      publicKey: $keys.publicKey,
-      privateKey: $keys.privateKey,
-      password: $keys.password,
-    })
+    let decryptedMsg = decryptThis //Gives warnings otherwise?
+    try {
+      decryptedMsg = await decryptMessage(decryptThis, {
+        publicKey: $keys.publicKey,
+        privateKey: $keys.privateKey,
+        password: $keys.password,
+      })
+    } catch (error) {
+      console.log(error)
+      if (
+        (error.message =
+          'Mandatory blank line missing between armor headers and armor data')
+      ) {
+        toast.push(
+          'Mandatory blank line missing between key headers and key data!',
+          {
+            theme: {
+              '--toastBackground': '#F56565',
+              '--toastProgressBackground': '#C53030',
+            },
+          }
+        )
+        return
+      }
+      toast.push('Cannot decrypt. Check keys!', {
+        theme: {
+          '--toastBackground': '#F56565',
+          '--toastProgressBackground': '#C53030',
+        },
+      })
+      return
+    }
     const messageIndexInArr = messageArray.indexOf(decryptThis)
     messageArray.splice(messageIndexInArr, 1, decryptedMsg)
     arr = messageArray
@@ -236,6 +275,7 @@
       </span>
     </Modal>
   {/if}
+  <SvelteToast />
 </div>
 
 <style>
