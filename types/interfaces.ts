@@ -4,6 +4,7 @@ export interface MessageData {
   encrypted: boolean
   room: string
   id: number
+  event: string
 }
 
 export interface EncryptMessage {

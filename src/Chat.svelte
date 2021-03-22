@@ -72,6 +72,7 @@
         encrypted: encrypt,
         room: room_ID,
         id: arr.length + 1,
+        event: 'message',
       })
       // shows un-encrypted message to sender
       arr = [
@@ -80,8 +81,9 @@
           message: message,
           username: user,
           encrypted: false,
-          room: 'rando',
+          room: room_ID,
           id: arr.length + 1,
+          event: 'message',
         },
       ]
       message = ''
@@ -92,6 +94,9 @@
       message: message,
       username: user,
       encrypted: encrypt,
+      room: room_ID,
+      id: arr.length + 1,
+      event: 'message',
     })
 
     arr = [
@@ -100,8 +105,9 @@
         message: message,
         username: user,
         encrypted: encrypt,
-        room: 'rando',
+        room: room_ID,
         id: arr.length + 1,
+        event: 'message',
       },
     ]
     message = ''

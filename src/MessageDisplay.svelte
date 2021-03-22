@@ -8,7 +8,16 @@
     if (message.username === userName) {
       return 'self-end bg-blue-500'
     } else if (message.username === 'Bot') {
-      return 'self-end bg-purple-600'
+      switch (message.event) {
+        case 'partner disconnected':
+          return 'bg-red-500'
+        case 'partner connected':
+          return 'bg-purple-600'
+        case 'connected':
+          return 'self-end bg-purple-600'
+        case 'disconnected':
+          return 'self-end bg-red-500'
+      }
     } else {
       return 'bg-green-500'
     }
