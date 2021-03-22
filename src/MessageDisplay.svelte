@@ -1,9 +1,9 @@
 <script>
   import type { MessageData } from '../types/interfaces'
-  import { decryptMessage } from './utility/cryptions'
-  import { keys } from './utility/store'
   export let user: string
   export let message: MessageData
+  export let decryptFunction: Function
+
   const identityColor = (userName: string) => {
     if (message.username === userName) {
       return 'self-end bg-blue-500'
@@ -22,26 +22,13 @@
       return 'bg-green-500'
     }
   }
-
-  async function decrypt(decryptThis: MessageData) {
-    if (!decryptThis.encrypted) {
-      return
-    }
-    const decryptedMsg = await decryptMessage(decryptThis, {
-      publicKey: $keys.publicKey,
-      privateKey: $keys.privateKey,
-      password: $keys.password,
-    })
-    message = decryptedMsg
-    console.log('decrypted in message element')
-  }
 </script>
 
 <article
   class={`__width rounded inline-block p-2 m-2 ${identityColor(user)} ${
     message.encrypted ? 'bg-pink-600' : null
   }`}
-  on:click={() => decrypt(message)}
+  on:click={decryptFunction}
 >
   {#if message.encrypted}
     <p class="text-white">Message is encrypted!</p>
@@ -50,6 +37,7 @@
   {/if}
 </article>
 
+<!-- on:click={() => decrypt(message, messageArray)} -->
 <style>
   .__width {
     min-width: min-content;

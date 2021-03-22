@@ -11,7 +11,6 @@ export async function createPGPMessage({
   if (password) {
     const messageObj = Message.fromText(message)
     const publicKeyObj = await readKey({ armoredKey: publicKey })
-    console.log('doing this')
     const privateKeyObj = await readKey({ armoredKey: privateKey })
     const decryptedPrivateKey = await decryptKey({
       privateKey: privateKeyObj,
@@ -51,12 +50,10 @@ export async function decryptMessage(
     scopedPrivate = await openpgp.readKey({ armoredKey: privateKey })
   }
   const messageObj = await openpgp.readMessage({ armoredMessage: message })
-  console.log(messageObj)
   const decryptedMessage: any = await decrypt({
     message: messageObj,
     privateKeys: scopedPrivate,
   })
-  console.log(decryptedMessage)
   return {
     message: decryptedMessage.data,
     username,

@@ -50,7 +50,7 @@
     arr = [...arr, data]
   })
 
-  // All click-de-encrypted messages re-encrypt whenever message array is updated.
+  // State
   let arr: MessageData[] = []
   const user: string = cuid()
   let message: string = ''
@@ -59,6 +59,7 @@
   let toggleRecipient: boolean = false
   let autoDecrypt: boolean = false
 
+  // Send Message
   async function submit(): Promise<void> {
     // returns if no message entered
     if (!message) {
@@ -78,7 +79,7 @@
         username: user,
         encrypted: encrypt,
         room: room_ID,
-        id: arr.length + 1,
+        id: cuid(),
         event: 'message',
       })
       // shows un-encrypted message to sender
@@ -89,7 +90,7 @@
           username: user,
           encrypted: false,
           room: room_ID,
-          id: arr.length + 1,
+          id: cuid(),
           event: 'message',
         },
       ]
@@ -102,7 +103,7 @@
       username: user,
       encrypted: encrypt,
       room: room_ID,
-      id: arr.length + 1,
+      id: cuid(),
       event: 'message',
     })
 
@@ -113,11 +114,29 @@
         username: user,
         encrypted: encrypt,
         room: room_ID,
-        id: arr.length + 1,
+        id: cuid(),
         event: 'message',
       },
     ]
     message = ''
+  }
+
+  // Decypts message on click
+  async function decrypt(
+    decryptThis: MessageData,
+    messageArray: MessageData[]
+  ) {
+    if (!decryptThis.encrypted) {
+      return
+    }
+    const decryptedMsg = await decryptMessage(decryptThis, {
+      publicKey: $keys.publicKey,
+      privateKey: $keys.privateKey,
+      password: $keys.password,
+    })
+    const messageIndexInArr = messageArray.indexOf(decryptThis)
+    messageArray.splice(messageIndexInArr, 1, decryptedMsg)
+    arr = messageArray
   }
 </script>
 
@@ -176,7 +195,11 @@
       class="__text-container mx-auto inline-flex flex-col overflow-y-auto w-full"
     >
       {#each arr as sonum}
-        <MessageDisplay message={sonum} {user} />
+        <MessageDisplay
+          message={sonum}
+          {user}
+          decryptFunction={() => decrypt(sonum, arr)}
+        />
       {/each}
     </section>
 
