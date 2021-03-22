@@ -14,11 +14,18 @@
 
   //   Get url param object
   export let params: any
-  const room_ID = params.roomid
+  let room_ID = params.roomid
 
   // Create ws connection and join room
   const socket = io() //.emit('room', { room_ID })
   socket.emit('create_room', { room_ID })
+
+  // Redirects to new room if room is full
+  socket.on('roomFullRedirect', () => {
+    room_ID = cuid.slug()
+    window.location.hash = `#/${room_ID}`
+    window.location.reload()
+  })
 
   // Run when receiving message
   socket.on('message', async (data: MessageData) => {
@@ -138,6 +145,7 @@
             >
           </p>
         </Switch>
+
         <Switch bind:checked={autoDecrypt}>
           <p class="text-white select-none" slot="text">
             Decrypt: <span
