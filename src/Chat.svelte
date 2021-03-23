@@ -3,7 +3,7 @@
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
   import { SvelteToast, toast } from '@zerodevx/svelte-toast'
-  // import { io } from 'socket.io-client'
+  import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { MessageData } from 'types/interfaces'
   import cuid from 'cuid'
@@ -28,44 +28,42 @@
   let userCount: number = 0
 
   // Create ws connection and join room
-  // const socket = io()
-  // socket.emit('create_room', { username: user, room_ID })
+  const socket = io()
+  socket.emit('create_room', { username: user, room_ID })
 
   // Redirects to new room if room is full
-  // socket.on('roomFullRedirect', () => {
-  //   room_ID = cuid.slug()
-  //   window.location.hash = `#/${room_ID}`
-  //   window.location.reload()
-  // })
-
-  // git push heroku main
+  socket.on('roomFullRedirect', () => {
+    room_ID = cuid.slug()
+    window.location.hash = `#/${room_ID}`
+    window.location.reload()
+  })
 
   // Run when receiving message
-  // socket.on('message', async (data: MessageData) => {
-  //   if (data.encrypted && autoDecrypt) {
-  //     // Does not display own messages from server
-  //     if (data.username === user) {
-  //       return
-  //     }
-  //     // descrypts message
-  //     const message = await decryptMessage(data, {
-  //       publicKey: $keys.publicKey,
-  //       privateKey: $keys.privateKey,
-  //       password: $keys.password,
-  //     })
-  //     arr = [...arr, message]
-  //     return
-  //   }
-  //   if (data.username === user) {
-  //     return
-  //   }
-  //   arr = [...arr, data]
-  // })
+  socket.on('message', async (data: MessageData) => {
+    if (data.encrypted && autoDecrypt) {
+      // Does not display own messages from server
+      if (data.username === user) {
+        return
+      }
+      // descrypts message
+      const message = await decryptMessage(data, {
+        publicKey: $keys.publicKey,
+        privateKey: $keys.privateKey,
+        password: $keys.password,
+      })
+      arr = [...arr, message]
+      return
+    }
+    if (data.username === user) {
+      return
+    }
+    arr = [...arr, data]
+  })
 
   // Change user count
-  // socket.on('changeCount', (data) => {
-  //   userCount = data.count
-  // })
+  socket.on('changeCount', (data) => {
+    userCount = data.count
+  })
 
   // Send Message
   async function submit(): Promise<void> {
@@ -92,15 +90,15 @@
           },
         })
       }
-      // // Emits encrypted message to server
-      // socket.emit('message', {
-      //   message: encryptedMessage,
-      //   username: user,
-      //   encrypted: encrypt,
-      //   room: room_ID,
-      //   id: cuid(),
-      //   event: 'message',
-      // })
+      // Emits encrypted message to server
+      socket.emit('message', {
+        message: encryptedMessage,
+        username: user,
+        encrypted: encrypt,
+        room: room_ID,
+        id: cuid(),
+        event: 'message',
+      })
       // shows un-encrypted message to sender
       arr = [
         ...arr,
@@ -117,14 +115,14 @@
       return
     }
     // Sends unencrypted message to server
-    // socket.emit('message', {
-    //   message: message,
-    //   username: user,
-    //   encrypted: encrypt,
-    //   room: room_ID,
-    //   id: cuid(),
-    //   event: 'message',
-    // })
+    socket.emit('message', {
+      message: message,
+      username: user,
+      encrypted: encrypt,
+      room: room_ID,
+      id: cuid(),
+      event: 'message',
+    })
 
     arr = [
       ...arr,
