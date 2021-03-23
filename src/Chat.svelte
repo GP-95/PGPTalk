@@ -186,24 +186,24 @@
 </script>
 
 <div
-  class="bg-indigo-300 w-screen h-screen flex flex-col justify-center items-center"
+  class="bg-indigo-300 w-screen h-screen flex flex-col justify-center items-center pb-2"
 >
   <div
-    class="flex justify-evenly rounded items-center mb-2 bg-indigo-600 p-2 w-5/12 min-w-min"
+    class="flex justify-evenly w-11/12 rounded items-center mb-2 mt-2 bg-indigo-600 pt-1 md:w-11/12 lg:w-6/12"
   >
     <section class="flex justify-between w-5/12 min-w-min mx-2">
       <div class="flex justify-evenly w-full">
         <Switch bind:checked={encrypt}>
           <img
             slot="icon"
-            class={`lock-icon select-none ${
+            class={`lock-icon select-none hidden sm:inline ${
               encrypt ? 'bg-green-400' : 'bg-yellow-600'
             } transition-colors`}
             src={encrypt ? 'icons/secure.svg' : 'icons/insecure.svg'}
             alt={encrypt ? 'locked icon' : 'unlocked icon'}
           />
           <p class="text-white select-none" slot="text">
-            Encryption: <span
+            Encrypt: <span
               class={`${encrypt ? 'text-green-400' : 'text-red-400'}`}
               >{encrypt ? 'ON' : 'OFF'}</span
             >
@@ -220,21 +220,23 @@
         </Switch>
       </div>
     </section>
-    <Button
-      buttonName="Recepient key"
-      backgroundColor="bg-yellow-600"
-      backgroundHoverColor="bg-yellow-500"
-      on:click={() => (toggleRecipient = !toggleRecipient)}
-    />
-    <Button
-      buttonName="Personal Keys"
-      backgroundColor="bg-green-600"
-      backgroundHoverColor="bg-green-500"
-      on:click={() => (togglePGP = !togglePGP)}
-    />
+    <section class="w-3/6 flex flex-col h-full justify-evenly sm:flex-row">
+      <Button
+        buttonName="Recepient key"
+        backgroundColor="bg-yellow-600"
+        backgroundHoverColor="bg-yellow-500"
+        on:click={() => (toggleRecipient = !toggleRecipient)}
+      />
+      <Button
+        buttonName="Personal Keys"
+        backgroundColor="bg-green-600"
+        backgroundHoverColor="bg-green-500"
+        on:click={() => (togglePGP = !togglePGP)}
+      />
+    </section>
   </div>
   <main
-    class=" sm:container h-5/6 mx-auto bg-blue-50 rounded-md p-4 flex-col justify-between pb-14"
+    class="container w-11/12 h-5/6 mx-auto bg-blue-50 rounded-md p-4 flex-col justify-between pb-14"
   >
     <section
       class="__text-container mx-auto inline-flex flex-col overflow-y-auto w-full"
@@ -259,11 +261,11 @@
         name=""
         id="message"
         autocomplete="off"
-        class="bg-gray-200 rounded h-8 outline-none border-2 w-4/6 focus:border-blue-600 focus:bg-gray-50 px-2 py-3 mx-2"
+        class="bg-gray-200 rounded h-8 outline-none border-2 w-5/6 focus:border-blue-600 focus:bg-gray-50 px-2 py-3 mx-2"
       />
       <button
         type="submit"
-        class="bg-blue-500 text-white px-7 py-1 w-2/6 max-w-xs rounded hover:bg-blue-600"
+        class="bg-blue-500 text-white text-center min-w-min px-1 w-1/6 py-1 rounded hover:bg-blue-600"
         disabled={!message}>Send</button
       >
     </form>

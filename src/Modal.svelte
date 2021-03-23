@@ -6,7 +6,7 @@
 
 <main class="backdrop" on:click={() => (toggle = !toggle)}>
   <section
-    class="container rounded p-5 flex flex-col justify-between"
+    class="h-4/5 bg-gray-200 rounded p-5 flex flex-col justify-between items-center w-11/12 sm:w-9/12 lg:w-6/12"
     on:click|stopPropagation
   >
     <slot name="content" />
@@ -42,11 +42,5 @@
     right: 0;
     background: rgba(0, 0, 0, 0.61);
     z-index: 10;
-  }
-
-  .container {
-    width: 35%;
-    height: 60%;
-    background: rgb(228, 227, 227);
   }
 </style>

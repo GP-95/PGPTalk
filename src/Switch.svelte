@@ -3,7 +3,7 @@
   export let disabled = false
 </script>
 
-<div class="flex flex-col justify-center items-center w-7/12">
+<div class="flex flex-col justify-center text-center items-center w-7/12">
   <div class="flex">
     <label class="svelteit-switch min-w-min mr-1">
       <input type="checkbox" bind:checked {disabled} />
