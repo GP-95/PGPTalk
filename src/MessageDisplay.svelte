@@ -11,13 +11,13 @@
       switch (message.event) {
         case 'partner disconnected':
           return 'bg-red-500'
-        case 'partner connected':
-          return 'bg-purple-600'
         case 'connected':
           return 'self-end bg-purple-600'
         case 'disconnected':
           return 'self-end bg-red-500'
       }
+    } else if (message.event === 'partner connected') {
+      return 'bg-purple-600'
     } else {
       return 'bg-green-500'
     }

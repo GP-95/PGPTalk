@@ -17,21 +17,31 @@
   export let params: any
   let room_ID = params.roomid
 
+  // State
+  let arr: MessageData[] = []
+  const user: string = cuid()
+  let message: string = ''
+  let encrypt: boolean = false
+  let togglePGP: boolean = false
+  let toggleRecipient: boolean = false
+  let autoDecrypt: boolean = false
+  let userCount: number = 0
+
   // Create ws connection and join room
-  const socket = io() //.emit('room', { room_ID })
-  socket.emit('create_room', { room_ID })
+  const socket = io()
+  socket.emit('create_room', { username: user, room_ID })
 
   // Redirects to new room if room is full
   socket.on('roomFullRedirect', () => {
     room_ID = cuid.slug()
     window.location.hash = `#/${room_ID}`
     window.location.reload()
+    // socket.connect()
   })
 
   // Run when receiving message
   socket.on('message', async (data: MessageData) => {
     if (data.encrypted && autoDecrypt) {
-      console.log('decrypting on arrival')
       // Does not display own messages from server
       if (data.username === user) {
         return
@@ -51,14 +61,10 @@
     arr = [...arr, data]
   })
 
-  // State
-  let arr: MessageData[] = []
-  const user: string = cuid()
-  let message: string = ''
-  let encrypt: boolean = false
-  let togglePGP: boolean = false
-  let toggleRecipient: boolean = false
-  let autoDecrypt: boolean = false
+  // Change user count
+  socket.on('changeCount', (data) => {
+    userCount = data.count
+  })
 
   // Send Message
   async function submit(): Promise<void> {
@@ -243,9 +249,10 @@
     </section>
 
     <form
-      class="flex object-bottom min-w-0 w-5/6 mx-auto mt-4"
+      class="flex justify-center items-center object-bottom min-w-0 w-5/6 mx-auto mt-4"
       on:submit|preventDefault={submit}
     >
+      <p class="opacity-50">{userCount}/2</p>
       <input
         bind:value={message}
         type="text"
