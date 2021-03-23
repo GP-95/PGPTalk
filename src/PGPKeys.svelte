@@ -59,7 +59,7 @@
     </div>
     <textarea
       bind:value={$keys.publicKey}
-      class="w-full my-2 h-32 max-h-30 rounded mb-5 outline-none border focus:border-blue-500 transition-colors p-1 max-h-36"
+      class="w-full my-2 h-32 rounded mb-5 outline-none border focus:border-blue-500 transition-colors p-1 lg:h-48 xl:h-54 "
       name="Public key"
       id="publicKey"
       autocomplete="off"
@@ -75,7 +75,7 @@
     </div>
     <textarea
       bind:value={$keys.privateKey}
-      class="w-full my-2 h-32 max-h-30 rounded outline-none border focus:border-blue-500 transition-colors p-1 max-h-36"
+      class="w-full my-2 h-32 rounded outline-none border focus:border-blue-500 transition-colors p-1 lg:h-48 xl:h-54"
       name="Private key"
       id="privateKey"
       autocomplete="off"

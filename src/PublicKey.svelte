@@ -1,10 +1,31 @@
 <script>
   import { recipientKey } from './utility/store'
+  import { toast } from '@zerodevx/svelte-toast'
+
+  async function pasteToTextArea() {
+    let text: any
+    try {
+      text = await navigator.clipboard.readText()
+      $recipientKey.public = text
+    } catch (error) {
+      toast.push('Cannot past on FireFox.', {
+        theme: {
+          '--toastBackground': '#F56565',
+          '--toastProgressBackground': '#C53030',
+        },
+      })
+    }
+  }
 </script>
 
-<div class="h-full text-center w-full">
-  <h1 class="text-lg text-white rounded bg-yellow-500 mb-2 px-9">
-    Paste recipient's public key
+<div
+  class="h-full text-center w-full flex flex-col justify-center items-center"
+>
+  <h1
+    class="text-lg text-white rounded bg-yellow-500 mb-2 px-9 w-9/12 hover:bg-yellow-400 cursor-pointer"
+    on:click={pasteToTextArea}
+  >
+    Paste public key
   </h1>
   <textarea
     bind:value={$recipientKey.public}
