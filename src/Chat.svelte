@@ -2,6 +2,7 @@
   import Switch from './Switch.svelte'
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
+  import IconBtn from './IconBtn.svelte'
   import { SvelteToast, toast } from '@zerodevx/svelte-toast'
   import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
@@ -195,7 +196,7 @@
         <Switch bind:checked={encrypt}>
           <img
             slot="icon"
-            class={`lock-icon select-none hidden sm:inline ${
+            class={`__lock-icon select-none hidden sm:inline ${
               encrypt ? 'bg-green-400' : 'bg-yellow-600'
             } transition-colors`}
             src={encrypt ? 'icons/secure.svg' : 'icons/insecure.svg'}
@@ -219,7 +220,9 @@
         </Switch>
       </div>
     </section>
-    <section class="w-3/6 flex flex-col h-full justify-evenly sm:flex-row">
+    <section
+      class="w-3/6 flex flex-col h-full justify-evenly items-center sm:flex-row"
+    >
       <Button
         buttonName="Recepient key"
         backgroundColor="bg-yellow-600"
@@ -232,6 +235,7 @@
         backgroundHoverColor="bg-green-500"
         on:click={() => (togglePGP = !togglePGP)}
       />
+      <!-- <IconBtn /> -->
     </section>
   </div>
   <main
@@ -253,7 +257,8 @@
       class="flex justify-center items-center object-bottom min-w-0 w-5/6 mx-auto mt-4"
       on:submit|preventDefault={submit}
     >
-      <p class="opacity-50">{userCount}/2</p>
+      <img src="/icons/user.svg" alt="users icon" class="__userIcon" />
+      <p class="opacity-50 select-none">{userCount}/2</p>
       <input
         bind:value={message}
         type="text"
@@ -295,9 +300,18 @@
     padding-bottom: 5rem;
   }
 
-  .lock-icon {
+  .__lock-icon {
     height: 34px;
     padding: 0.2rem;
     border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .__userIcon {
+    height: 25px;
+    opacity: 0.5;
+    margin-bottom: 0.3em;
+    pointer-events: none;
+    user-select: none;
   }
 </style>

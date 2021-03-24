@@ -41,7 +41,9 @@
 <style>
   .__width {
     min-width: min-content;
-    word-wrap: normal;
-    max-width: 300px;
+    word-wrap: break-word;
+    word-break: break-word;
+    width: max-content;
+    max-width: 80%;
   }
 </style>

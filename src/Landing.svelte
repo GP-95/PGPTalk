@@ -4,7 +4,6 @@
   import Button from './Button.svelte'
 
   let variableSlug: string = cuid.slug()
-  // const staticUrl: string = 'localhost:5000/#/'
   const staticUrl: string = 'pgptalk.me/#/'
   $: url = staticUrl + variableSlug
 
@@ -23,6 +22,7 @@
   <section class="__container rounded pt-2">
     <div class="flex items-center justify-center">
       <img
+        draggable="false"
         src="icons/dice.svg"
         alt="randomize icon"
         class="__icon"
@@ -36,6 +36,7 @@
         bind:value={url}
       />
       <img
+        draggable="false"
         src="icons/copy.svg"
         alt="randomize icon"
         class="__icon"
@@ -72,6 +73,7 @@
   }
   .__icon {
     height: 30px;
+    user-select: none;
   }
 
   .__icon:hover {
