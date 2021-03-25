@@ -1,13 +1,14 @@
 import { encrypt, Message, readKey, decryptKey, decrypt, sign } from './pgp'
 import * as openpgp from './pgp'
 import type { EncryptMessage, KeyPair, MessageData } from 'types/interfaces'
+import { pubKey } from './publicKey'
 
 export async function createPGPMessage(
   { message, publicKey, privateKey, password }: EncryptMessage,
   signMessage: boolean
 ) {
   // Creates PGP object types
-  const messageObj = Message.fromText(message)
+  let messageObj = Message.fromText(message)
   const publicKeyObj = await readKey({ armoredKey: publicKey })
   let privateKeyObj = await readKey({ armoredKey: privateKey })
 
@@ -20,11 +21,15 @@ export async function createPGPMessage(
   }
 
   if (signMessage) {
-    const signedMessage = sign({
+    const signature = await messageObj.signDetached([privateKeyObj])
+    console.log(signature)
+    const encryptedMessage = await encrypt({
       message: messageObj,
+      publicKeys: publicKeyObj,
       privateKeys: privateKeyObj,
+      signature: signature,
     })
-    console.log(signedMessage)
+    return encryptedMessage
   }
 
   const encryptedMessage = await encrypt({
@@ -32,6 +37,7 @@ export async function createPGPMessage(
     publicKeys: publicKeyObj,
     privateKeys: privateKeyObj,
   })
+
   return encryptedMessage
 }
 
@@ -39,21 +45,27 @@ export async function decryptMessage(
   { message, username, encrypted, room, id, event }: MessageData,
   { publicKey, privateKey, password, name, email }: KeyPair
 ): Promise<MessageData> {
-  let scopedPrivate: any
+  let privateKeyObj = await readKey({ armoredKey: privateKey })
   if (password) {
-    const privateKeyObj = await readKey({ armoredKey: privateKey })
-    scopedPrivate = await decryptKey({
+    privateKeyObj = await decryptKey({
       privateKey: privateKeyObj,
       passphrase: password,
     })
-  } else {
-    scopedPrivate = await openpgp.readKey({ armoredKey: privateKey })
   }
-  const messageObj = await openpgp.readMessage({ armoredMessage: message })
+
+  let messageObj = await openpgp.readMessage({ armoredMessage: message })
   const decryptedMessage: any = await decrypt({
     message: messageObj,
-    privateKeys: scopedPrivate,
+    privateKeys: privateKeyObj,
   })
+
+  // if (false) {
+  //   const publicKeyObj = await readKey({ armoredKey: pubKey })
+
+  //   console.log('-------------------------')
+  //   console.log(verifiedMsg)
+  //   console.log('-------------------------')
+  // }
 
   console.log(decryptedMessage)
 

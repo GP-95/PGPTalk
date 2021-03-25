@@ -8,13 +8,13 @@
     if ($keys.password) {
       var keysObj = await generateKey({
         type: 'rsa',
-        userIds: { name: 'test', email: 'test@test.test' },
+        userIds: { name: $keys.name, email: $keys.email },
         passphrase: $keys.password,
       })
     } else {
       var keysObj = await generateKey({
         type: 'rsa',
-        userIds: { name: 'test', email: 'test@test.test' },
+        userIds: { name: $keys.name, email: $keys.email },
       })
     }
 
@@ -40,7 +40,6 @@
 
 <main class=" mx-auto flex flex-col w-full">
   <Button buttonName="Generate new keys" on:click={newKeys} />
-  <p>{$keys.password}</p>
   <input
     type="password"
     bind:value={$keys.password}

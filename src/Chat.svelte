@@ -88,7 +88,6 @@
 
   // Send Message
   async function submit(): Promise<void> {
-    // returns if no message entered
     if (!message) {
       return
     }
