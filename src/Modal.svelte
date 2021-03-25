@@ -2,13 +2,13 @@
   import Button from './Button.svelte'
 
   export let toggle: boolean = false
+  export let containerStyle: string =
+    'h-4/5 bg-gray-200 rounded p-5 flex flex-col justify-between items-center w-11/12 sm:w-9/12 lg:w-6/12 xl:w-4/12'
+  export let extraStyle: string = ''
 </script>
 
 <main class="backdrop" on:click={() => (toggle = !toggle)}>
-  <section
-    class="h-4/5 bg-gray-200 rounded p-5 flex flex-col justify-between items-center w-11/12 sm:w-9/12 lg:w-6/12 xl:w-4/12"
-    on:click|stopPropagation
-  >
+  <section class={`${containerStyle} ${extraStyle}`} on:click|stopPropagation>
     <slot name="content" />
     <div
       class={`flex ${

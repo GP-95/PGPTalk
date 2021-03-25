@@ -3,10 +3,17 @@
   import Modal from './Modal.svelte'
   import Button from './Button.svelte'
   import IconBtn from './IconBtn.svelte'
+  import Info from './Info.svelte'
   import { SvelteToast, toast } from '@zerodevx/svelte-toast'
   import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { MessageData } from 'types/interfaces'
+
+  import {
+    uniqueNamesGenerator,
+    adjectives,
+    names,
+  } from 'unique-names-generator'
   import cuid from 'cuid'
 
   import { keys, recipientKey } from './utility/store'
@@ -23,10 +30,21 @@
   const user: string = cuid()
   let message: string = ''
   let encrypt: boolean = false
-  let togglePGP: boolean = false
-  let toggleRecipient: boolean = false
   let autoDecrypt: boolean = false
   let userCount: number = 0
+  let signMessage: boolean = true
+
+  // Modal state
+  let toggleRecipient: boolean = false
+  let togglePGP: boolean = false
+  let toggleInfo: boolean = false
+
+  // Generate random name and email
+  $keys.name = uniqueNamesGenerator({
+    dictionaries: [adjectives, names],
+    separator: '',
+  }).replace(' ', '')
+  $keys.email = `${$keys.name}@${$keys.name}.com`
 
   // Create ws connection and join room
   const socket = io()
@@ -51,6 +69,8 @@
         publicKey: $keys.publicKey,
         privateKey: $keys.privateKey,
         password: $keys.password,
+        name: $keys.name,
+        email: $keys.email,
       })
       arr = [...arr, message]
       return
@@ -76,12 +96,15 @@
       // encrypts message
       let encryptedMessage
       try {
-        encryptedMessage = await createPGPMessage({
-          message,
-          publicKey: $recipientKey.public,
-          privateKey: $keys.privateKey,
-          password: $keys.password,
-        })
+        encryptedMessage = await createPGPMessage(
+          {
+            message,
+            publicKey: $recipientKey.public,
+            privateKey: $keys.privateKey,
+            password: $keys.password,
+          },
+          signMessage
+        )
       } catch (error) {
         console.log(error)
         toast.push('Cannot encrypt! Check keys and password!', {
@@ -150,6 +173,8 @@
     let decryptedMsg = decryptThis //Gives warnings otherwise?
     try {
       decryptedMsg = await decryptMessage(decryptThis, {
+        name: $keys.name,
+        email: $keys.email,
         publicKey: $keys.publicKey,
         privateKey: $keys.privateKey,
         password: $keys.password,
@@ -191,7 +216,7 @@
   <div
     class="flex justify-evenly w-11/12 rounded items-center mb-2 mt-2 bg-indigo-600 pt-1 md:w-11/12 lg:w-6/12"
   >
-    <section class="flex justify-between w-5/12 min-w-min mx-2">
+    <section class="flex justify-between w-5/12 min-w-min mx-2 py-2">
       <div class="flex justify-evenly w-full">
         <Switch bind:checked={encrypt}>
           <img
@@ -235,8 +260,8 @@
         backgroundHoverColor="bg-green-500"
         on:click={() => (togglePGP = !togglePGP)}
       />
-      <!-- <IconBtn /> -->
     </section>
+    <IconBtn on:click={() => (toggleInfo = true)} />
   </div>
   <main
     class="container w-11/12 h-5/6 mx-auto bg-blue-50 rounded-md p-4 flex-col justify-between pb-14"
@@ -288,6 +313,19 @@
         class="h-full w-full sm:w-10/12 lg:w-9/12 xl:w-10/12"
       >
         <PublicKey />
+      </span>
+    </Modal>
+  {/if}
+  {#if toggleInfo}
+    <Modal
+      bind:toggle={toggleInfo}
+      containerStyle="h-2/5 bg-gray-200 rounded p-5 flex flex-col justify-between items-center w-11/12 sm:w-9/12 lg:w-6/12 xl:w-4/12"
+    >
+      <span
+        slot="content"
+        class="h-full w-full sm:w-10/12 lg:w-8/12 xl:w-10/12 flex justify-center items-center"
+      >
+        <Info sign={signMessage} />
       </span>
     </Modal>
   {/if}

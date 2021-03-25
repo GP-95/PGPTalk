@@ -1,43 +1,43 @@
-import { encrypt, Message, readKey, decryptKey, decrypt } from './pgp'
+import { encrypt, Message, readKey, decryptKey, decrypt, sign } from './pgp'
 import * as openpgp from './pgp'
 import type { EncryptMessage, KeyPair, MessageData } from 'types/interfaces'
 
-export async function createPGPMessage({
-  message,
-  publicKey,
-  privateKey,
-  password,
-}: EncryptMessage) {
+export async function createPGPMessage(
+  { message, publicKey, privateKey, password }: EncryptMessage,
+  signMessage: boolean
+) {
+  // Creates PGP object types
+  const messageObj = Message.fromText(message)
+  const publicKeyObj = await readKey({ armoredKey: publicKey })
+  let privateKeyObj = await readKey({ armoredKey: privateKey })
+
+  // Decrypts private key if it is encrypted
   if (password) {
-    const messageObj = Message.fromText(message)
-    const publicKeyObj = await readKey({ armoredKey: publicKey })
-    const privateKeyObj = await readKey({ armoredKey: privateKey })
-    const decryptedPrivateKey = await decryptKey({
+    privateKeyObj = await decryptKey({
       privateKey: privateKeyObj,
       passphrase: password,
     })
-    const encryptedMessage = await encrypt({
+  }
+
+  if (signMessage) {
+    const signedMessage = sign({
       message: messageObj,
-      publicKeys: publicKeyObj,
-      privateKeys: decryptedPrivateKey,
-    })
-    return encryptedMessage
-  } else {
-    const messageObj = Message.fromText(message)
-    const publicKeyObj = await readKey({ armoredKey: publicKey })
-    const privateKeyObj = await readKey({ armoredKey: privateKey })
-    const encryptedMessage = await encrypt({
-      message: messageObj,
-      publicKeys: publicKeyObj,
       privateKeys: privateKeyObj,
     })
-    return encryptedMessage
+    console.log(signedMessage)
   }
+
+  const encryptedMessage = await encrypt({
+    message: messageObj,
+    publicKeys: publicKeyObj,
+    privateKeys: privateKeyObj,
+  })
+  return encryptedMessage
 }
 
 export async function decryptMessage(
   { message, username, encrypted, room, id, event }: MessageData,
-  { publicKey, privateKey, password }: KeyPair
+  { publicKey, privateKey, password, name, email }: KeyPair
 ): Promise<MessageData> {
   let scopedPrivate: any
   if (password) {
@@ -54,6 +54,9 @@ export async function decryptMessage(
     message: messageObj,
     privateKeys: scopedPrivate,
   })
+
+  console.log(decryptedMessage)
+
   return {
     message: decryptedMessage.data,
     username,

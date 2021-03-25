@@ -15,6 +15,8 @@ export interface EncryptMessage {
 }
 
 export interface KeyPair {
+  name: string
+  email: string
   publicKey: string
   privateKey: string
   password: string

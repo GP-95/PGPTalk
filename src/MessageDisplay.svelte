@@ -31,7 +31,7 @@
   on:click={decryptFunction}
 >
   {#if message.encrypted}
-    <p class="text-white">Message is encrypted!</p>
+    <p class="text-white select-none">Click to decrypt!</p>
   {:else}
     <p class="text-white">{message.message}</p>
   {/if}
