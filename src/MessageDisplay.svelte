@@ -28,6 +28,9 @@
   class={`__width rounded inline-block p-2 m-2 ${identityColor(user)} ${
     message.encrypted ? 'bg-pink-600' : null
   }`}
+  class:notVerified={!message.encrypted &&
+    !message.verified &&
+    message.username !== user}
   on:click={decryptFunction}
 >
   {#if message.encrypted}
@@ -45,5 +48,9 @@
     word-break: break-word;
     width: max-content;
     max-width: 80%;
+  }
+
+  .notVerified {
+    border: 2px solid rgb(241, 81, 81);
   }
 </style>

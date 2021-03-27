@@ -8,7 +8,7 @@
       text = await navigator.clipboard.readText()
       $recipientKey.public = text
     } catch (error) {
-      toast.push('Cannot past on FireFox.', {
+      toast.push('Cannot paste on FireFox.', {
         theme: {
           '--toastBackground': '#F56565',
           '--toastProgressBackground': '#C53030',

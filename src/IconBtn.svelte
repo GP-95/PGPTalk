@@ -5,7 +5,7 @@
 
 <div
   on:click|preventDefault
-  class="__container flex justify-center items-center bg-blue-600 mx-3 p-1 rounded hover:bg-blue-400"
+  class="__container flex justify-center items-center bg-blue-500 mx-3 p-1 rounded hover:bg-blue-600"
 >
   <img src={imgLocation} alt={imgAlt} class=".__icon mx-auto h-5/6" />
 </div>

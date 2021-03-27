@@ -1,7 +1,5 @@
 <script>
   import { keys } from './utility/store'
-
-  export let sign: boolean
 </script>
 
 <main class="flex flex-col justify-center items-center mb-2">
@@ -23,18 +21,4 @@
     name="email"
     class="mb-2 p-1 w-full rounded focus:outline-none border border-gray-300 focus:border-blue-600 transition"
   />
-  <div
-    class="flex justify-center items-center"
-    class:text-red-600={!sign}
-    class:text-green-700={sign}
-  >
-    <label for="sign mb-1" class="select-none">Sign messages?</label>
-    <input
-      type="checkbox"
-      name="sign"
-      id="sign"
-      class="mt-1 mx-1 outline-none"
-      bind:checked={sign}
-    />
-  </div>
 </main>

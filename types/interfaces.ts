@@ -2,6 +2,7 @@ export interface MessageData {
   message: string
   username: string
   encrypted: boolean
+  verified: boolean | null
   room: string
   id: string
   event: string

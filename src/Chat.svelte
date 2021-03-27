@@ -32,7 +32,6 @@
   let encrypt: boolean = false
   let autoDecrypt: boolean = false
   let userCount: number = 0
-  let signMessage: boolean = true
 
   // Modal state
   let toggleRecipient: boolean = false
@@ -65,13 +64,17 @@
         return
       }
       // descrypts message
-      const message = await decryptMessage(data, {
-        publicKey: $keys.publicKey,
-        privateKey: $keys.privateKey,
-        password: $keys.password,
-        name: $keys.name,
-        email: $keys.email,
-      })
+      const message = await decryptMessage(
+        data,
+        {
+          publicKey: $keys.publicKey,
+          privateKey: $keys.privateKey,
+          password: $keys.password,
+          name: $keys.name,
+          email: $keys.email,
+        },
+        $recipientKey.public
+      )
       arr = [...arr, message]
       return
     }
@@ -81,7 +84,7 @@
     arr = [...arr, data]
   })
 
-  // Change user count
+  // Changes user count
   socket.on('changeCount', (data) => {
     userCount = data.count
   })
@@ -92,21 +95,18 @@
       return
     }
     if (encrypt) {
-      // encrypts message
+      // Encrypts message
       let encryptedMessage
       try {
-        encryptedMessage = await createPGPMessage(
-          {
-            message,
-            publicKey: $recipientKey.public,
-            privateKey: $keys.privateKey,
-            password: $keys.password,
-          },
-          signMessage
-        )
+        encryptedMessage = await createPGPMessage({
+          message,
+          publicKey: $recipientKey.public,
+          privateKey: $keys.privateKey,
+          password: $keys.password,
+        })
       } catch (error) {
         console.log(error)
-        toast.push('Cannot encrypt! Check keys and password!', {
+        toast.push('Error! Check keys and password!', {
           theme: {
             '--toastBackground': '#F56565',
             '--toastProgressBackground': '#C53030',
@@ -122,13 +122,14 @@
         id: cuid(),
         event: 'message',
       })
-      // shows un-encrypted message to sender
+      // Pushes to unencrypted message to screen for sender
       arr = [
         ...arr,
         {
           message: message,
           username: user,
           encrypted: false,
+          verified: null,
           room: room_ID,
           id: cuid(),
           event: 'message',
@@ -147,12 +148,14 @@
       event: 'message',
     })
 
+    // Pushes to unencrypted message to screen for sender
     arr = [
       ...arr,
       {
         message: message,
         username: user,
         encrypted: encrypt,
+        verified: null,
         room: room_ID,
         id: cuid(),
         event: 'message',
@@ -171,13 +174,17 @@
     }
     let decryptedMsg = decryptThis //Gives warnings otherwise?
     try {
-      decryptedMsg = await decryptMessage(decryptThis, {
-        name: $keys.name,
-        email: $keys.email,
-        publicKey: $keys.publicKey,
-        privateKey: $keys.privateKey,
-        password: $keys.password,
-      })
+      decryptedMsg = await decryptMessage(
+        decryptThis,
+        {
+          name: $keys.name,
+          email: $keys.email,
+          publicKey: $keys.publicKey,
+          privateKey: $keys.privateKey,
+          password: $keys.password,
+        },
+        $recipientKey.public
+      )
     } catch (error) {
       console.log(error)
       if (
@@ -203,6 +210,7 @@
       })
       return
     }
+    // Adds decrypted message to the correct index in message array and updates state
     const messageIndexInArr = messageArray.indexOf(decryptThis)
     messageArray.splice(messageIndexInArr, 1, decryptedMsg)
     arr = messageArray
@@ -250,13 +258,13 @@
       <Button
         buttonName="Recepient key"
         backgroundColor="bg-yellow-600"
-        backgroundHoverColor="bg-yellow-500"
+        backgroundHoverColor="hover:bg-yellow-500"
         on:click={() => (toggleRecipient = !toggleRecipient)}
       />
       <Button
         buttonName="Personal Keys"
         backgroundColor="bg-green-600"
-        backgroundHoverColor="bg-green-500"
+        backgroundHoverColor="hover:bg-green-500"
         on:click={() => (togglePGP = !togglePGP)}
       />
     </section>
@@ -324,7 +332,7 @@
         slot="content"
         class="h-full w-full sm:w-10/12 lg:w-8/12 xl:w-10/12 flex justify-center items-center"
       >
-        <Info sign={signMessage} />
+        <Info />
       </span>
     </Modal>
   {/if}
