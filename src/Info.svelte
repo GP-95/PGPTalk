@@ -6,7 +6,7 @@
   <label for="name" class="mb-1 select-none">Name</label>
   <input
     value={$keys.name}
-    minlength="6"
+    minlength="3"
     maxlength="60"
     type="text"
     name="name"
@@ -16,7 +16,7 @@
   <input
     value={$keys.email}
     minlength="3"
-    maxlength="60"
+    maxlength="80"
     type="email"
     name="email"
     class="mb-2 p-1 w-full rounded focus:outline-none border border-gray-300 focus:border-blue-600 transition"

@@ -25,12 +25,13 @@
 </script>
 
 <article
-  class={`__width rounded inline-block p-2 m-2 ${identityColor(user)} ${
-    message.encrypted ? 'bg-pink-600' : null
-  }`}
+  class={`__width rounded inline-block p-2 m-2 relative ${identityColor(
+    user
+  )} ${message.encrypted ? 'bg-pink-600' : null}`}
   class:notVerified={!message.encrypted &&
     !message.verified &&
-    message.username !== user}
+    message.username !== user &&
+    message.username !== 'Bot'}
   on:click={decryptFunction}
 >
   {#if message.encrypted}
@@ -38,9 +39,11 @@
   {:else}
     <p class="text-white">{message.message}</p>
   {/if}
+  {#if !message.encrypted && !message.verified && message.username !== user && message.username !== 'Bot'}
+    <img src="icons/close.svg" alt="not signed icon" class="notSignedIcon" />
+  {/if}
 </article>
 
-<!-- on:click={() => decrypt(message, messageArray)} -->
 <style>
   .__width {
     min-width: min-content;
@@ -51,6 +54,14 @@
   }
 
   .notVerified {
-    border: 2px solid rgb(241, 81, 81);
+    border: 2px solid;
+    border-color: rgba(241, 81, 81, 0.808);
+  }
+
+  .notSignedIcon {
+    position: absolute;
+    top: 18%;
+    right: -35px;
+    height: 28px;
   }
 </style>
