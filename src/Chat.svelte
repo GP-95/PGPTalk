@@ -5,7 +5,7 @@
   import IconBtn from './IconBtn.svelte'
   import Info from './Info.svelte'
   import { SvelteToast, toast } from '@zerodevx/svelte-toast'
-  // import { io } from 'socket.io-client'
+  import { io } from 'socket.io-client'
   import MessageDisplay from './MessageDisplay.svelte'
   import type { MessageData } from 'types/interfaces'
 
@@ -40,17 +40,31 @@
   let toggleInfo: boolean = false
 
   // Handle scrolling when messages are added
-  let chatBox: HTMLElement
+  let chatBox: HTMLElement | any = { childElementCount: 0 } //contain's placeholder till element gets mounted
+  let scroll: boolean = false
+
   onMount(() => {
     chatBox = document.getElementById('chatBox')
     chatBox.scrollHeight
   })
 
+  // Changes scroll to true if arr changes
+  $: if (
+    arr.length > chatBox.childElementCount &&
+    chatBox.childElementCount >= 1
+  ) {
+    scroll = true
+  }
+
+  // Only scrolls down if scroll is true and once the DOM has been updated
   afterUpdate(() => {
-    chatBox.scrollTo({
-      top: chatBox.scrollHeight,
-      behavior: 'smooth',
-    })
+    if (scroll) {
+      chatBox.scrollTo({
+        top: chatBox.scrollHeight,
+        behavior: 'smooth',
+      })
+      scroll = false
+    }
   })
 
   // Generate random name and email
@@ -61,49 +75,49 @@
   $keys.email = `${$keys.name}@${$keys.name}.com`
 
   // Create ws connection and join room
-  // const socket = io()
-  // socket.emit('create_room', { username: user, room_ID })
+  const socket = io()
+  socket.emit('create_room', { username: user, room_ID })
 
   // Redirects to new room if room is full
-  // socket.on('roomFullRedirect', () => {
-  //   room_ID = cuid.slug()
-  //   window.location.hash = `#/${room_ID}`
-  //   window.location.reload()
-  // })
+  socket.on('roomFullRedirect', () => {
+    room_ID = cuid.slug()
+    window.location.hash = `#/${room_ID}`
+    window.location.reload()
+  })
 
   // Run when receiving message
-  // socket.on('message', async (data: MessageData) => {
-  //   if (data.encrypted && autoDecrypt) {
-  //     // Does not display own messages from server
-  //     if (data.username === user) {
-  //       return
-  //     }
-  //     // descrypts message
-  //     const message = await decryptMessage(
-  //       data,
-  //       {
-  //         publicKey: $keys.publicKey,
-  //         privateKey: $keys.privateKey,
-  //         password: $keys.password,
-  //         name: $keys.name,
-  //         email: $keys.email,
-  //       },
-  //       $recipientKey.public
-  //     )
-  //     arr = [...arr, message]
-  //     chatBox.scrollTop = chatBox.scrollHeight
-  //     return
-  //   }
-  //   if (data.username === user) {
-  //     return
-  //   }
-  //   arr = [...arr, data]
-  // })
+  socket.on('message', async (data: MessageData) => {
+    if (data.encrypted && autoDecrypt) {
+      // Does not display own messages from server
+      if (data.username === user) {
+        return
+      }
+      // descrypts message
+      const message = await decryptMessage(
+        data,
+        {
+          publicKey: $keys.publicKey,
+          privateKey: $keys.privateKey,
+          password: $keys.password,
+          name: $keys.name,
+          email: $keys.email,
+        },
+        $recipientKey.public
+      )
+      arr = [...arr, message]
+      chatBox.scrollTop = chatBox.scrollHeight
+      return
+    }
+    if (data.username === user) {
+      return
+    }
+    arr = [...arr, data]
+  })
 
   // Changes user count
-  // socket.on('changeCount', (data) => {
-  //   userCount = data.count
-  // })
+  socket.on('changeCount', (data) => {
+    userCount = data.count
+  })
 
   // Send Message
   async function submit(): Promise<void> {
@@ -130,14 +144,14 @@
         })
       }
       // Emits encrypted message to server
-      // socket.emit('message', {
-      //   message: encryptedMessage,
-      //   username: user,
-      //   encrypted: encrypt,
-      //   room: room_ID,
-      //   id: cuid(),
-      //   event: 'message',
-      // })
+      socket.emit('message', {
+        message: encryptedMessage,
+        username: user,
+        encrypted: encrypt,
+        room: room_ID,
+        id: cuid(),
+        event: 'message',
+      })
 
       // Pushes to unencrypted message to screen for sender
       arr = [
@@ -156,14 +170,14 @@
       return
     }
     // Sends unencrypted message to server
-    // socket.emit('message', {
-    //   message: message,
-    //   username: user,
-    //   encrypted: encrypt,
-    //   room: room_ID,
-    //   id: cuid(),
-    //   event: 'message',
-    // })
+    socket.emit('message', {
+      message: message,
+      username: user,
+      encrypted: encrypt,
+      room: room_ID,
+      id: cuid(),
+      event: 'message',
+    })
 
     // Pushes to unencrypted message to screen for sender
     arr = [
